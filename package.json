@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "ee": "npm run build:as && scout.ts turboproof.yaml",
+    "ee:realistic": "npm run build:as && scout.ts turboproof-realistic.yaml",
     "relayer": "npm run build && ts-node src/relayer/bin.ts",
+    "relayer:realistic": "ts-node src/relayer/bin.ts realistic test/fixture/eth_getProof_sample.json",
     "build": "ethereumjs-config-build",
     "build:as": "gulp",
     "tslint": "ethereumjs-config-tslint",

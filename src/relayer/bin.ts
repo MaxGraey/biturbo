@@ -1,14 +1,24 @@
 // tslint:disable:no-console
 import { generateTestSuite, TestSuite } from './lib'
+import { generateRealisticTestSuite } from './realistic'
 const fs = require('fs')
+const path = require('path')
 const yaml = require('js-yaml')
 
 async function main() {
-  const testSuite = await generateTestSuite()
-  writeScoutConfig(testSuite)
+  if (process.argv.length === 2) {
+    const testSuite = await generateTestSuite()
+    writeScoutConfig(testSuite)
+  } else if (process.argv.length == 4 && process.argv[2] === 'realistic') {
+    const rpcData = JSON.parse(fs.readFileSync(process.argv[3]))
+    const testSuite = await generateRealisticTestSuite(rpcData)
+    writeScoutConfig(testSuite, 'turboproof-realistic.yaml')
+  } else {
+    throw new Error('Invalid arguments')
+  }
 }
 
-function writeScoutConfig(data: TestSuite) {
+function writeScoutConfig(data: TestSuite, outFile: string = 'turboproof.yaml') {
   const testSuite = {
     beacon_state: {
       execution_scripts: ['build/main_with_keccak.wasm'],
@@ -23,7 +33,7 @@ function writeScoutConfig(data: TestSuite) {
   }
 
   const serializedTestSuite = yaml.safeDump(testSuite)
-  fs.writeFileSync('turboproof.yaml', serializedTestSuite)
+  fs.writeFileSync(outFile, serializedTestSuite)
 }
 
 main()
